@@ -17,13 +17,28 @@ function escucharEventos(){
     productosCarrito.addEventListener('click', borrarProducto);
 }
 
+let btn = document.querySelector('.btn-comprar')
+btn.addEventListener("click", function(){  
+
+})
+
 function agregarProducto(e){
     e.preventDefault();
-    if (e.target.classList.contains('btn-agregar-carrito')) {
+    if (e.target.classList.contains('btn-comprar')) {
         const seleccionarProducto = e.target.parentElement; 
         identificarProducto(seleccionarProducto);
     }
-    
+
+    //libreria
+    Toastify({
+        text:"Producto agregado",
+        style: {
+            background: "linear-gradient(to right, #00b09b, #96c93d)",
+          }
+    }).showToast()
+
+
+    //local storage
     let arreglo_json = JSON.stringify(carrito);
 
     localStorage.setItem("carrito", arreglo_json);
@@ -49,7 +64,7 @@ function borrarProducto(e) {
         precioTotal.innerHTML = 0;
         cantidadProductos.innerHTML = 0;
     }
-    loadHtml();
+    cargarHtml();
 }
 
 function identificarProducto(producto){
@@ -79,17 +94,17 @@ function identificarProducto(producto){
         carrito = [...carrito, infoProducto]
         contarProductos++;
     }
-    loadHtml();
+    cargarHtml();
     
 }
 
-function loadHtml(){
-    clearHtml();
+function cargarHtml(){
+    resetearHtml();
     carrito.forEach(producto => {
         const {imagen, nombre, precio, cantidad, id} = producto;
-        const row = document.createElement('div');
-        row.classList.add('item');
-        row.innerHTML = `
+        const lista = document.createElement('div');
+        lista.classList.add('item');
+        lista.innerHTML = `
             <img src="${imagen}" alt="">
             <div class="item-content">
                 <h5>${nombre}</h5>
@@ -99,14 +114,36 @@ function loadHtml(){
             <span class="borrar-producto" data-id="${id}">X</span>
             `;
 
-        productosCarrito.appendChild(row);
+        productosCarrito.appendChild(lista);
 
         precioTotal.innerHTML = totalCarrito;
 
         cantidadProductos.innerHTML = contarProductos;
     });
 }
- function clearHtml(){
+ function resetearHtml(){
     productosCarrito.innerHTML = '';
  }
 
+//GEO
+function mostrar_ubicacion(ubicacion){
+    let latitud = ubicacion.coords.latitude
+    let longitud = ubicacion.coords.longitude
+    let key="e18ead90bc9063e8b5955f2c41706c20"
+
+const clima = document.createElement('div')
+clima.classList.add('item')
+
+    fetch (`https://api.openweathermap.org/data/2.5/weather?lat=${latitud}&lon=${longitud}&appid=${key}&units=metric&lang=es`)
+    .then(response=> response.json())
+    .then(data=>{
+            clima.innerHTML =`<div class="clima">
+                                    <p>Gracias por visitarnos desde ${data.name} :)</p>
+                                    <p>La temperatura actual en tu ubicación es ${data.main.temp}°. Ideal para festejar tu cumpleaños!!</p>
+                                    </div>`
+            document.body.append(clima)
+                })
+}
+
+
+navigator.geolocation.getCurrentPosition(mostrar_ubicacion)

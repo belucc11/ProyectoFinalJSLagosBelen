@@ -166,3 +166,10 @@ p.cerrar-btn{
     cursor: pointer;
     color: #000;
 }
+
+.clima{
+    text-align: center;
+    font-weight: 700;
+    background-color: #d1c0db;
+    font-family: system-ui;
+}
